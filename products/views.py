@@ -1,48 +1,47 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
-from models import Product
-from django.shortcuts import get_object_or_404 , redirect
-# Create your views here.
-
-def products(request):
-    return render(request, 'index.html')
+from django.contrib import messages
+from .models import Product
+from .forms import ProductForm
 
 def product_list(request):
-    products = Product.objects.all()
-    return render(request, 'products/products.html', {'products': products})
+    products = Product.objects.all().order_by('-created_at')
+    return render(request, 'products/product_list.html', {'products': products})
 
-
-def create_product(request):
+def product_create(request):
     if request.method == 'POST':
-        name = request.POST.get('name')
-        price = request.POST.get('price')
-        image = request.FILES.get('image')
-        instock_items = request.POST.get('instock_items')
-        description = request.POST.get('description')
-
-        product = Product(
-            name=name,
-            price=price,
-            image=image,
-            instock_items=instock_items,
-            description=description
-        )
-        product.save()
-        return HttpResponse("Product created successfully!")
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Product created successfully!')
+            return redirect('product_list')
+    else:
+        form = ProductForm()
     
-    return render(request, 'products/create_product.html')  # Render form for creating a product
+    return render(request, 'products/product_form.html', {'form': form, 'title': 'Create Product'})
 
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    if product is None:
-        return render(request, 'page404.html', status=404)
-    
     return render(request, 'products/product_detail.html', {'product': product})
 
-def delete_product(request, product_id):
+def product_update(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES, instance=product)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Product updated successfully!')
+            return redirect('product_detail', product_id=product.id)
+    else:
+        form = ProductForm(instance=product)
+    
+    return render(request, 'products/product_form.html', {'form': form, 'title': 'Update Product'})
+
+def product_delete(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     if request.method == 'POST':
         product.delete()
-        return HttpResponse("Product deleted successfully!")
+        messages.success(request, 'Product deleted successfully!')
+        return redirect('product_list')
     
-    return redirect('product_list')  # Redirect to product list after deletion
+    return render(request, 'products/product_delete.html', {'product': product})

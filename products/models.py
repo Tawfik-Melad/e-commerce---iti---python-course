@@ -14,4 +14,4 @@ class Product(models.Model):
     description = models.TextField(blank=True, null=True) # long text allowed
 
     def __str__(self):
-        return f"{self.name} ({self.code})"
+        return f"{self.name} (ID: {self.id})"
