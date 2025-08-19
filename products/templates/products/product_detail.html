@@ -53,6 +53,20 @@
                     </div>
                     {% endif %}
 
+                    {% if product.categories.all %}
+                    <div class="mb-4">
+                        <h5 class="fw-semibold mb-2">Categories</h5>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for category in product.categories.all %}
+                            <a href="{% url 'category-detail' category.pk %}"
+                                class="badge bg-primary text-decoration-none">
+                                <i class="fas fa-tag me-1"></i>{{ category.name }}
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
                     <div class="mb-4">
                         <h5 class="fw-semibold mb-2">Product Information</h5>
                         <div class="row">

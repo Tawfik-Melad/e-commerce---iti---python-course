@@ -75,6 +75,43 @@
                             {% endif %}
                         </div>
 
+                        <!-- Categories -->
+                        <div class="mb-3">
+                            <label for="{{ form.categories_input.id_for_label }}" class="form-label fw-semibold">
+                                <i class="fas fa-tags me-1"></i>Categories
+                            </label>
+                            {{ form.categories_input }}
+                            {% if form.categories_input.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.categories_input.errors %}
+                                <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>{{ form.categories_input.help_text }}
+                            </div>
+
+                            <!-- Category Suggestions -->
+                            <div class="mt-2">
+                                <small class="text-muted">
+                                    <i class="fas fa-lightbulb me-1"></i>Popular categories:
+                                </small>
+                                <div class="mt-1">
+                                    <span class="badge bg-light text-dark me-1 mb-1">Electronics</span>
+                                    <span class="badge bg-light text-dark me-1 mb-1">Clothing</span>
+                                    <span class="badge bg-light text-dark me-1 mb-1">Home & Garden</span>
+                                    <span class="badge bg-light text-dark me-1 mb-1">Sports</span>
+                                    <span class="badge bg-light text-dark me-1 mb-1">Books</span>
+                                    <span class="badge bg-light text-dark me-1 mb-1">Toys</span>
+                                    <span class="badge bg-light text-dark me-1 mb-1">Beauty</span>
+                                    <span class="badge bg-light text-dark me-1 mb-1">Automotive</span>
+                                    <span class="badge bg-light text-dark me-1 mb-1">Health</span>
+                                    <span class="badge bg-light text-dark me-1 mb-1">Food</span>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Product Image -->
                         <div class="mb-3">
                             <label for="{{ form.image.id_for_label }}" class="form-label fw-semibold">
@@ -97,7 +134,7 @@
                         </div>
 
                         <!-- Description -->
-                        <div class="mb-4">
+                        <div class="mb-3">
                             <label for="{{ form.description.id_for_label }}" class="form-label fw-semibold">
                                 <i class="fas fa-align-left me-1"></i>Description
                             </label>
@@ -109,10 +146,6 @@
                                 {% endfor %}
                             </div>
                             {% endif %}
-                            <div class="form-text">
-                                <i class="fas fa-info-circle me-1"></i>Provide a detailed description of your product
-                                (optional)
-                            </div>
                         </div>
 
                         <!-- Form Actions -->

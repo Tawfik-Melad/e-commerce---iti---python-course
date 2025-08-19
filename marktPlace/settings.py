@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'aboutus',
     'contactus',
     'products',
+    'category',
 ]
 
 MIDDLEWARE = [

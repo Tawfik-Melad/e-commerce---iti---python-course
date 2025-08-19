@@ -2,6 +2,8 @@ from django.db import models
 
 # Create your models here.
 from django.db import models
+from category.models import Category
+
 
 class Product(models.Model):
     name = models.CharField(max_length=255)
@@ -12,6 +14,6 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now=True)      # set whenever updated
     id = models.AutoField(primary_key=True)  # auto-incrementing ID
     description = models.TextField(blank=True, null=True) # long text allowed
-
+    categories = models.ManyToManyField(Category, related_name="products")
     def __str__(self):
         return f"{self.name} (ID: {self.id})"

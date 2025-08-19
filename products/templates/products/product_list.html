@@ -37,6 +37,19 @@
                 </p>
                 {% endif %}
 
+                {% if product.categories.all %}
+                <div class="mb-3">
+                    <div class="d-flex flex-wrap gap-1">
+                        {% for category in product.categories.all %}
+                        <a href="{% url 'category-detail' category.pk %}"
+                            class="badge bg-light text-dark text-decoration-none">
+                            <i class="fas fa-tag me-1"></i>{{ category.name }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
                 <div class="mt-auto">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <span class="price-tag">

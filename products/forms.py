@@ -2,9 +2,19 @@ from django import forms
 from .models import Product
 
 class ProductForm(forms.ModelForm):
+    categories_input = forms.CharField(
+        required=False,
+        help_text="Enter categories separated by commas (e.g., Electronics, Smartphones, Accessories)",
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter categories separated by commas'
+        })
+    )
+    
     class Meta:
         model = Product
         fields = ['name', 'price', 'image', 'instock_items', 'description']
+        
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter product name'}),
             'price': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00', 'step': '0.01'}),
