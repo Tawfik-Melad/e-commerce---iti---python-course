@@ -1,0 +1,258 @@
+{% extends 'main/base.html' %}
+
+{% block title %}My Products - MarketPlace{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'profile' %}">Profile</a></li>
+            <li class="breadcrumb-item active" aria-current="page">My Products</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-2">
+                <i class="fas fa-boxes me-2 text-primary"></i>My Products
+            </h2>
+            <p class="text-muted mb-0">Manage your products and track their performance</p>
+        </div>
+        <a href="{% url 'product_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Add New Product
+        </a>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <i class="fas fa-boxes fa-2x text-primary mb-2"></i>
+                    <h4 class="fw-bold text-primary">{{ products.count }}</h4>
+                    <small class="text-muted">Total Products</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                    <h4 class="fw-bold text-success">
+                        {{ products|length }}
+                    </h4>
+                    <small class="text-muted">In Stock</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <i class="fas fa-dollar-sign fa-2x text-warning mb-2"></i>
+                    <h4 class="fw-bold text-warning">
+                        {% if products %}
+                        ${{ products.0.price|floatformat:2 }}
+                        {% else %}
+                        $0.00
+                        {% endif %}
+                    </h4>
+                    <small class="text-muted">Avg Price</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <i class="fas fa-clock fa-2x text-info mb-2"></i>
+                    <h4 class="fw-bold text-info">
+                        {% if products %}
+                        {{ products.0.created_at|timesince }}
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </h4>
+                    <small class="text-muted">Latest Product</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Grid -->
+    {% if products %}
+    <div class="row g-4">
+        {% for product in products %}
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 border-0 shadow-sm product-card">
+                <!-- Product Image -->
+                <div class="product-image-container">
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" class="card-img-top product-image" alt="{{ product.name }}">
+                    {% else %}
+                    <div
+                        class="card-img-top product-image-placeholder d-flex align-items-center justify-content-center">
+                        <i class="fas fa-image fa-3x text-muted"></i>
+                    </div>
+                    {% endif %}
+
+                    <!-- Product Status Badge -->
+                    <div class="product-status">
+                        {% if product.instock_items > 0 %}
+                        <span class="badge bg-success">In Stock</span>
+                        {% else %}
+                        <span class="badge bg-danger">Out of Stock</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Owner Badge -->
+                    <div class="owner-badge">
+                        <span class="badge bg-primary">Your Product</span>
+                    </div>
+                </div>
+
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title fw-bold mb-2">{{ product.name }}</h5>
+
+                    {% if product.description %}
+                    <p class="card-text text-muted small mb-3">
+                        {{ product.description|truncatewords:15 }}
+                    </p>
+                    {% endif %}
+
+                    <div class="mt-auto">
+                        <!-- Price and Stock -->
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="price-tag">
+                                <i class="fas fa-dollar-sign me-1"></i>{{ product.price }}
+                            </span>
+                            <span class="stock-badge">
+                                <i class="fas fa-boxes me-1"></i>{{ product.instock_items }}
+                            </span>
+                        </div>
+
+                        <!-- Product Categories -->
+                        {% if product.categories.all %}
+                        <div class="mb-3">
+                            <div class="d-flex flex-wrap gap-1">
+                                {% for category in product.categories.all %}
+                                <span class="badge bg-light text-dark">
+                                    <i class="fas fa-tag me-1"></i>{{ category.name }}
+                                </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'product_detail' product.id %}" class="btn btn-outline-primary flex-fill">
+                                <i class="fas fa-eye me-1"></i>View
+                            </a>
+                            <a href="{% url 'product_update' product.id %}" class="btn btn-warning">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'product_delete' product.id %}" class="btn btn-danger">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-transparent border-0 pt-0">
+                    <small class="text-muted">
+                        <i class="fas fa-clock me-1"></i>Added {{ product.created_at|timesince }} ago
+                    </small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="text-center py-5">
+        <div class="empty-state">
+            <i class="fas fa-box-open fa-5x text-muted mb-4"></i>
+            <h3 class="mb-3">No Products Yet</h3>
+            <p class="text-muted mb-4">
+                You haven't added any products yet. Start building your marketplace by adding your first product!
+            </p>
+            <a href="{% url 'product_create' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-plus me-2"></i>Add Your First Product
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .product-card {
+        transition: all 0.3s ease;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .product-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .product-image-container {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .product-image {
+        height: 200px;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .product-image-placeholder {
+        height: 200px;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+
+    .product-card:hover .product-image {
+        transform: scale(1.05);
+    }
+
+    .product-status {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+    }
+
+    .owner-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+    }
+
+    .price-tag {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .stock-badge {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .empty-state {
+        padding: 3rem;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        border-radius: 20px;
+        border: 2px dashed #cbd5e0;
+    }
+</style>
+{% endblock %}

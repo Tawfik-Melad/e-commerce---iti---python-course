@@ -70,10 +70,7 @@
                     <div class="mb-4">
                         <h5 class="fw-semibold mb-2">Product Information</h5>
                         <div class="row">
-                            <div class="col-6">
-                                <small class="text-muted">Product ID</small>
-                                <p class="mb-0 fw-semibold">#{{ product.id }}</p>
-                            </div>
+
                             <div class="col-6">
                                 <small class="text-muted">Added</small>
                                 <p class="mb-0 fw-semibold">{{ product.created_at|date:"M d, Y" }}</p>
@@ -95,16 +92,43 @@
                                 </p>
                             </div>
                         </div>
+                        <div class="row mt-2">
+                            <div class="col-12">
+                                <small class="text-muted">Owner</small>
+                                <p class="mb-0 fw-semibold">
+                                    <i class="fas fa-user me-1"></i>{{
+                                    product.get_full_name|default:product.owner.username}}
+                                </p>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Action Buttons -->
                     <div class="d-flex gap-2 flex-wrap">
+                        {% if user.is_authenticated and user != product.owner %}
+                        <form method="post" action="{% url 'add_to_cart' product.id %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success" {% if product.instock_items == 0 %}disabled{% endif %}>
+                                <i class="fas fa-cart-plus me-2"></i>
+                                {% if product.instock_items == 0 %}
+                                    Out of Stock
+                                {% else %}
+                                    Add to Cart
+                                {% endif %}
+                            </button>
+                        </form>
+                        {% endif %}
+                        
+
+                        {% if user == product.owner %}
                         <a href="{% url 'product_update' product.id %}" class="btn btn-warning">
                             <i class="fas fa-edit me-2"></i>Edit Product
                         </a>
                         <a href="{% url 'product_delete' product.id %}" class="btn btn-danger">
                             <i class="fas fa-trash me-2"></i>Delete Product
                         </a>
+                        {% endif %}
+
                         <a href="{% url 'product_list' %}" class="btn btn-outline-secondary">
                             <i class="fas fa-arrow-left me-2"></i>Back to Products
                         </a>

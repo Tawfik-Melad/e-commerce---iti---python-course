@@ -1,6 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from .models import Product
 from .forms import ProductForm
 from category.models import Category
@@ -9,12 +11,14 @@ def product_list(request):
     products = Product.objects.all().order_by('-created_at')
     return render(request, 'products/product_list.html', {'products': products})
 
+@login_required
 def product_create(request):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
             # 1. Save product object (without committing categories yet)
             product = form.save(commit=False)
+            product.owner = request.user  # Set the owner
             product.save()
 
             # 2. Handle categories input
@@ -32,8 +36,14 @@ def product_create(request):
 
     return render(request, 'products/product_form.html', {'form': form, 'title': 'Create Product'})
 
+@login_required
 def product_update(request, product_id):
     product = get_object_or_404(Product, id=product_id)
+    
+    # Check if user owns this product
+    if product.owner != request.user:
+        messages.error(request, 'You do not have permission to edit this product.')
+        return redirect('product_detail', product_id=product.id)
     
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES, instance=product)
@@ -64,8 +74,15 @@ def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     return render(request, 'products/product_detail.html', {'product': product})
 
+@login_required
 def product_delete(request, product_id):
     product = get_object_or_404(Product, id=product_id)
+    
+    # Check if user owns this product
+    if product.owner != request.user:
+        messages.error(request, 'You do not have permission to delete this product.')
+        return redirect('product_detail', product_id=product.id)
+    
     if request.method == 'POST':
         product.delete()
         messages.success(request, 'Product deleted successfully!')

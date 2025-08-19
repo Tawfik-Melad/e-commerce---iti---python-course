@@ -1,8 +1,8 @@
 from django.db import models
+from django.contrib.auth.models import User
+from category.models import Category
 
 # Create your models here.
-from django.db import models
-from category.models import Category
 
 
 class Product(models.Model):
@@ -15,5 +15,13 @@ class Product(models.Model):
     id = models.AutoField(primary_key=True)  # auto-incrementing ID
     description = models.TextField(blank=True, null=True) # long text allowed
     categories = models.ManyToManyField(Category, related_name="products")
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='products' , null=True, blank=True)
+    
     def __str__(self):
         return f"{self.name} (ID: {self.id})"
+    
+    def get_owner(self):
+        return self.owner.username if self.owner else "No Owner"
+
+    class Meta:
+        ordering = ['-created_at']

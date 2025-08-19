@@ -1,0 +1,194 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Shopping Cart - MarketPlace{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Shopping Cart</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-shopping-cart me-2"></i>Shopping Cart
+                    </h4>
+                </div>
+                <div class="card-body p-0">
+                    {% if cart.items.all %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Total</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in cart.items.all %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if item.product.image %}
+                                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}"
+                                                class="rounded me-3"
+                                                style="width: 60px; height: 60px; object-fit: cover;">
+                                            {% else %}
+                                            <div class="bg-light rounded me-3 d-flex align-items-center justify-content-center"
+                                                style="width: 60px; height: 60px;">
+                                                <i class="fas fa-image text-muted"></i>
+                                            </div>
+                                            {% endif %}
+                                            <div>
+                                                <h6 class="mb-1">{{ item.product.name }}</h6>
+                                                <small class="text-muted">Stock: {{ item.product.instock_items
+                                                    }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-bold text-primary">${{ item.product.price }}</span>
+                                    </td>
+                                    <td>
+                                        <form method="post" action="{% url 'update_cart_item' item.id %}"
+                                            class="d-flex align-items-center">
+                                            {% csrf_token %}
+                                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1"
+                                                max="{{ item.product.instock_items }}"
+                                                class="form-control form-control-sm" style="width: 70px;">
+                                            <button type="submit" class="btn btn-sm btn-outline-primary ms-2">
+                                                <i class="fas fa-sync-alt"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <span class="fw-bold text-success">${{ item.total_price }}</span>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'remove_from_cart' item.id %}"
+                                            class="btn btn-sm btn-outline-danger"
+                                            onclick="return confirm('Are you sure you want to remove this item?')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">Your cart is empty</h5>
+                        <p class="text-muted">Add some products to get started!</p>
+                        <a href="{% url 'product_list' %}" class="btn btn-primary">
+                            <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-calculator me-2"></i>Order Summary
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Items ({{ cart.total_items }}):</span>
+                        <span class="fw-bold">${{ cart.total_price }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Shipping:</span>
+                        <span class="text-success">FREE</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="h5 mb-0">Total:</span>
+                        <span class="h5 mb-0 text-primary">${{ cart.total_price }}</span>
+                    </div>
+
+                    {% if cart.items.all %}
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'checkout' %}" class="btn btn-success btn-lg">
+                            <i class="fas fa-credit-card me-2"></i>Proceed to Checkout
+                        </a>
+                        <a href="{% url 'product_list' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Recent Orders -->
+            {% if user.orders.exists %}
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-header bg-info text-white">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-history me-2"></i>Recent Orders
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% for order in user.orders.all|slice:":3" %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <small class="text-muted">Order #{{ order.order_number }}</small>
+                            <br>
+                            <small class="text-muted">{{ order.created_at|date:"M d, Y" }}</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-{{ order.status|yesno:'success,warning' }}">{{ order.status|title
+                                }}</span>
+                            <br>
+                            <small class="text-muted">${{ order.total_amount }}</small>
+                        </div>
+                    </div>
+                    {% if not forloop.last %}
+                    <hr class="my-2">{% endif %}
+                    {% endfor %}
+                    <div class="text-center mt-3">
+                        <a href="{% url 'order_list' %}" class="btn btn-sm btn-outline-info">
+                            View All Orders
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .table th {
+        border-top: none;
+        font-weight: 600;
+        color: #495057;
+    }
+
+    .table td {
+        vertical-align: middle;
+    }
+
+    .form-control-sm {
+        border-radius: 6px;
+    }
+
+    .btn-sm {
+        border-radius: 6px;
+    }
+</style>
+{% endblock %}

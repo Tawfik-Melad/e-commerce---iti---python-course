@@ -39,12 +39,22 @@ class CategoryUpdateView(UpdateView):
         messages.success(self.request, 'Category updated successfully!')
         return super().form_valid(form)
 
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+
+@method_decorator(login_required, name='dispatch')
 class CategoryDeleteView(DeleteView):
     model = Category
     template_name = 'category/category_confirm_delete.html'
     success_url = reverse_lazy('category-list')
     
     def delete(self, request, *args, **kwargs):
+        category = self.get_object()
+        # Check if category has products
+        if category.products.exists():
+            messages.error(request, f'Cannot delete category "{category.name}" because it contains products. Please remove or reassign the products first.')
+            return redirect('category-detail', pk=category.pk)
+        
         messages.success(request, 'Category deleted successfully!')
         return super().delete(request, *args, **kwargs)
 

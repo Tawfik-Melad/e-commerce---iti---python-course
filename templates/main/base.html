@@ -220,7 +220,7 @@
             </button>
 
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'product_list' %}">
                             <i class="fas fa-home me-1"></i>Products
@@ -231,21 +231,68 @@
                             <i class="fas fa-tags me-1"></i>Categories
                         </a>
                     </li>
+                    {% if user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'product_create' %}">
                             <i class="fas fa-plus me-1"></i>Add Product
                         </a>
                     </li>
+                    {% endif %}
                     <li class="nav-item">
-                        <a class="nav-link" href="/aboutus/">
+                        <a class="nav-link" href="{% url 'about_us' %}">
                             <i class="fas fa-info-circle me-1"></i>About
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/contactus/">
+                        <a class="nav-link" href="{% url 'contact_us' %}">
                             <i class="fas fa-envelope me-1"></i>Contact
                         </a>
                     </li>
+                </ul>
+
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-1"></i>{{ user.get_full_name|default:user.username }}
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'profile' %}">
+                                    <i class="fas fa-user-edit me-2"></i>My Profile
+                                </a></li>
+                            <li><a class="dropdown-item" href="{% url 'my_products' %}">
+                                    <i class="fas fa-boxes me-2"></i>My Products
+                                </a></li>
+                            <li><a class="dropdown-item" href="{% url 'cart_view' %}">
+                                    <i class="fas fa-shopping-cart me-2"></i>Shopping Cart
+                                    {% if user.cart.total_items > 0 %}
+                                    <span class="badge bg-primary ms-2">{{ user.cart.total_items }}</span>
+                                    {% endif %}
+                                </a></li>
+                            <li><a class="dropdown-item" href="{% url 'order_list' %}">
+                                    <i class="fas fa-shopping-bag me-2"></i>My Orders
+                                </a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="{% url 'logout' %}">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                </a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">
+                            <i class="fas fa-sign-in-alt me-1"></i>Login
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'register' %}">
+                            <i class="fas fa-user-plus me-1"></i>Register
+                        </a>
+                    </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>

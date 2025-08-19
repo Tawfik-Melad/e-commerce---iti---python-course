@@ -1,0 +1,219 @@
+{% extends 'main/base.html' %}
+
+{% block title %}My Profile - MarketPlace{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">My Profile</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Profile Info -->
+        <div class="col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="profile-avatar mb-3">
+                        {% if user.profile.avatar %}
+                        <img src="{{ user.profile.avatar.url }}" alt="{{ user.username }}" class="rounded-circle"
+                            width="120" height="120">
+                        {% else %}
+                        <div class="avatar-placeholder rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="fas fa-user fa-3x text-white"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <h4 class="fw-bold mb-1">{{ user.get_full_name|default:user.username }}</h4>
+                    <p class="text-muted mb-3">@{{ user.username }}</p>
+
+                    <div class="row text-center mb-3">
+                        <div class="col-6">
+                            <h5 class="fw-bold text-primary mb-1">{{ user.products.count }}</h5>
+                            <small class="text-muted">Products</small>
+                        </div>
+                        <div class="col-6">
+                            <h5 class="fw-bold text-success mb-1">{{ user.date_joined|timesince }}</h5>
+                            <small class="text-muted">Member</small>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'my_products' %}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-boxes me-2"></i>My Products
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Form -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-user-edit me-2"></i>Edit Profile
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ user_form.first_name.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="fas fa-user me-1"></i>First Name *
+                                </label>
+                                {{ user_form.first_name }}
+                                {% if user_form.first_name.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in user_form.first_name.errors %}
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ user_form.last_name.id_for_label }}" class="form-label fw-semibold">
+                                    <i class="fas fa-user me-1"></i>Last Name *
+                                </label>
+                                {{ user_form.last_name }}
+                                {% if user_form.last_name.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in user_form.last_name.errors %}
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ user_form.email.id_for_label }}" class="form-label fw-semibold">
+                                <i class="fas fa-envelope me-1"></i>Email Address *
+                            </label>
+                            {{ user_form.email }}
+                            {% if user_form.email.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in user_form.email.errors %}
+                                <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ profile_form.avatar.id_for_label }}" class="form-label fw-semibold">
+                                <i class="fas fa-camera me-1"></i>Profile Picture
+                            </label>
+                            {{ profile_form.avatar }}
+                            {% if profile_form.avatar.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in profile_form.avatar.errors %}
+                                <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ profile_form.phone.id_for_label }}" class="form-label fw-semibold">
+                                <i class="fas fa-phone me-1"></i>Phone Number
+                            </label>
+                            {{ profile_form.phone }}
+                            {% if profile_form.phone.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in profile_form.phone.errors %}
+                                <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ profile_form.date_of_birth.id_for_label }}" class="form-label fw-semibold">
+                                <i class="fas fa-calendar me-1"></i>Date of Birth
+                            </label>
+                            {{ profile_form.date_of_birth }}
+                            {% if profile_form.date_of_birth.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in profile_form.date_of_birth.errors %}
+                                <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ profile_form.address.id_for_label }}" class="form-label fw-semibold">
+                                <i class="fas fa-map-marker-alt me-1"></i>Address
+                            </label>
+                            {{ profile_form.address }}
+                            {% if profile_form.address.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in profile_form.address.errors %}
+                                <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="{{ profile_form.bio.id_for_label }}" class="form-label fw-semibold">
+                                <i class="fas fa-info-circle me-1"></i>Bio
+                            </label>
+                            {{ profile_form.bio }}
+                            {% if profile_form.bio.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in profile_form.bio.errors %}
+                                <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex gap-2 justify-content-end">
+                            <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .avatar-placeholder {
+        width: 120px;
+        height: 120px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        margin: 0 auto;
+    }
+
+    .profile-avatar img {
+        object-fit: cover;
+        border: 4px solid #fff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-control {
+        border-radius: 10px;
+        border: 2px solid #e2e8f0;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+</style>
+{% endblock %}
