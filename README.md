@@ -3,7 +3,7 @@
 MarktPlace is a web-based marketplace application where users can browse products and make purchases. Built with Django, HTML, and CSS, it provides a simple yet effective platform for buying and selling items online.
 
 ## Demo
-
+https://github.com/user-attachments/assets/7e656267-5521-43f5-9ddc-172a0d270597
 
 
 ## Features
@@ -17,8 +17,8 @@ MarktPlace is a web-based marketplace application where users can browse product
 ## Tech Stack
 
 - **Backend:** Django (Python)
-- **Frontend:** HTML, CSS
-- **Database:** SQLite (default, can be changed)
+- **Frontend:** HTML, CSS, JS
+- **Database:** postgres
 
 ## Getting Started
 
